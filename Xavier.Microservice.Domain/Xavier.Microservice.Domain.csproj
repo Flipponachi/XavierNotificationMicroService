@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Xavier.Domain.Core\Xavier.Domain.Core.csproj" />
+    <ProjectReference Include="..\Xavier.Microservices.Repository\Xavier.Microservices.Repository.csproj" />
+  </ItemGroup>
+
 </Project>

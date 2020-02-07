@@ -4,4 +4,17 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Xavier.Domain.Core\Xavier.Domain.Core.csproj" />
+    <ProjectReference Include="..\Xavier.Infra.Bus\Xavier.Infra.Bus.csproj" />
+    <ProjectReference Include="..\Xavier.Microservice.Domain\Xavier.Microservice.Domain.csproj" />
+    <ProjectReference Include="..\Xavier.Microservices.Repository\Xavier.Microservices.Repository.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.AspNetCore.App.Ref\3.1.0\ref\netcoreapp3.1\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

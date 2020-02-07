@@ -2,14 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
+using Xavier.Domain.Core.MessageBus.Bus;
+using Xavier.Infra.IOC;
+using Xavier.Microservice.Domain.EventHandler;
+using Xavier.Microservice.Domain.Events;
+using Xavier.Microservices.Repository;
 
 namespace Xavier.Microservice.API
 {
@@ -26,6 +34,23 @@ namespace Xavier.Microservice.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddDbContext<NotificationMicroserviceContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("NotificationConnection"));
+            });
+
+            services.AddSwaggerGen(swagger =>
+            {
+                swagger.SwaggerDoc("v1", new OpenApiInfo { Title = "Notification Microservices", Version = "v1" });
+            });
+
+            services.AddMediatR(typeof(Startup));
+            RegisterServices(services);
+        }
+
+        private void RegisterServices(IServiceCollection services)
+        {
+            DependencyServiceContainer.RegisterServices(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +63,9 @@ namespace Xavier.Microservice.API
 
             app.UseHttpsRedirection();
 
+            app.UseSwagger();
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Notification Microservices API"); });
+
             app.UseRouting();
 
             app.UseAuthorization();
@@ -46,6 +74,12 @@ namespace Xavier.Microservice.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private void ConfigureEventBus(IApplicationBuilder app)
+        {
+            var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<NotificationCreatedEvent, NotificationEventHandler>();
         }
     }
 }
